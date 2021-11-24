@@ -33,7 +33,7 @@ public class JWTTokenProvider {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateJwt(UserPrincipal userPrincipal){
+    public String generateJwtToken(UserPrincipal userPrincipal){
         String[] claims = getClaimsFromUser(userPrincipal);
         return JWT.create().withIssuer(GET_ARRAYS_LLC).withAudience(GET_ARRAYS_ADMINISTRATION)
                 .withIssuedAt(new Date()) .withSubject(userPrincipal.getUsername())
