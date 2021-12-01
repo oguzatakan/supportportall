@@ -1,7 +1,12 @@
 package com.atakanoguzdev.supportportall.exception;
 
+import com.atakanoguzdev.supportportall.domain.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -15,5 +20,15 @@ public class ExceptionHandling {
     private static final String ERROR_PROCESSING_FILE = "Error occurred while processing file";
     private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
     public static final String ERROR_PATH = "/error";
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<HttpResponse> accountDisabledException(){
+        return createHttpResponse(HttpStatus.BAD_REQUEST, ACCOUNT_DISABLED);
+    }
+
+    private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase()
+                , message.toUpperCase()),httpStatus);
+    }
 
 }
