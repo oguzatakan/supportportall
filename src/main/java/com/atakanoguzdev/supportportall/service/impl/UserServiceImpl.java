@@ -31,6 +31,10 @@ import static com.atakanoguzdev.supportportall.enumeration.Role.ROLE_USER;
 @Transactional
 @Qualifier("userDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
+    public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
+    public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
+    public static final String NO_USER_FOUND_BY_USERNAME = "No user found by username ";
+    public static final String FOUND_USER_BY_USERNAME = "Returning found user by username: ";
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder;
@@ -47,14 +51,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUserName(username);
         if (user == null) {
-            LOGGER.error("User not found by username: " + username);
-            throw new UsernameNotFoundException("User not found by username: " + username);
+            LOGGER.error(NO_USER_FOUND_BY_USERNAME + username);
+            throw new UsernameNotFoundException(NO_USER_FOUND_BY_USERNAME + username);
         }else {
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             userRepository.save(user);
             UserPrincipal userPrincipal = new UserPrincipal(user);
-            LOGGER.info("Returning found user by username: " + username);
+            LOGGER.info(FOUND_USER_BY_USERNAME + username);
             return userPrincipal;
         }
 
@@ -100,28 +104,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private User validateNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail) throws UserNotFoundException, UsernameExistException, EmailExistException {
-        if (StringUtils.isNotBlank(currentUsername)) {
+        User userByNewUserName = findUserByUserName(newUsername);
+        User userByNewEmail = findUserByEmail(newEmail);
+        if(StringUtils.isNotBlank(currentUsername)) {
             User currentUser = findUserByUserName(currentUsername);
             if(currentUser == null) {
-                throw new UserNotFoundException("No user found by username "+ currentUsername);
+                throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME + currentUsername);
             }
-            User userByNewUserName = findUserByUserName(newUsername);
-            if (userByNewUserName != null && !currentUser.getId().equals(userByNewUserName.getId())) {
-                throw new UsernameExistException("Username already exists");
+            if(userByNewUserName != null && !currentUser.getId().equals(userByNewUserName.getId())) {
+                throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
             }
-            User userByNewEmail = findUserByEmail(newEmail);
-            if (userByNewEmail != null && !currentUser.getId().equals(userByNewEmail.getId())) {
-                throw new EmailExistException("Username already exists");
+            if(userByNewEmail != null && !currentUser.getId().equals(userByNewEmail.getId())) {
+                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
             }
             return currentUser;
         } else {
-            User userByUserName = findUserByUserName(newUsername);
-            if (userByUserName != null) {
-                throw new UsernameExistException("Username already exists");
+
+            if(userByNewUserName != null) {
+                throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
             }
-            User userByEmail = findUserByEmail(newEmail);
-            if (userByEmail != null) {
-                throw new EmailExistException("Username already exists");
+            if(userByNewEmail != null) {
+                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
             }
             return null;
         }
