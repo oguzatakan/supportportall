@@ -2,7 +2,6 @@ package com.atakanoguzdev.supportportall.service.impl;
 
 import com.atakanoguzdev.supportportall.domain.User;
 import com.atakanoguzdev.supportportall.domain.UserPrincipal;
-import com.atakanoguzdev.supportportall.enumeration.Role;
 import com.atakanoguzdev.supportportall.exception.domain.EmailExistException;
 import com.atakanoguzdev.supportportall.exception.domain.UserNotFoundException;
 import com.atakanoguzdev.supportportall.exception.domain.UsernameExistException;
@@ -25,16 +24,15 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
-import static com.atakanoguzdev.supportportall.enumeration.Role.ROLE_USER;
+
+import static com.atakanoguzdev.supportportall.constant.UserImplConstant.*;
+import static com.atakanoguzdev.supportportall.enumeration.Role.*;
+
 
 @Service
 @Transactional
 @Qualifier("userDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
-    public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
-    public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
-    public static final String NO_USER_FOUND_BY_USERNAME = "No user found by username ";
-    public static final String FOUND_USER_BY_USERNAME = "Returning found user by username: ";
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder;
@@ -88,7 +86,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private String getTemporaryProfileImageUrl() {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/image/profile/temp").toUriString();
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH).toUriString();
     }
 
     private String encodePassword(String password) {
@@ -132,16 +130,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<User> getUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
     @Override
     public User findUserByUserName(String username) {
-        return null;
+        return userRepository.findUserByUserName(username);
     }
 
     @Override
     public User findUserByEmail(String email) {
-        return null;
+        return userRepository.findUserByEmail(email);
     }
 }
