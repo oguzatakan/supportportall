@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.Properties;
 
 import static com.atakanoguzdev.supportportall.constant.EmailConstant.*;
+import static javax.mail.Message.RecipientType.CC;
+import static javax.mail.Message.RecipientType.TO;
 
 @Service
 public class EmailService {
@@ -28,8 +30,8 @@ public class EmailService {
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
-        message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(email,false));
-        message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(CC_EMAIL,false));
+        message.setRecipients(TO,InternetAddress.parse(email,false));
+        message.setRecipients(CC,InternetAddress.parse(CC_EMAIL,false));
         message.setSubject(EMAIL_SUBJECT);
         message.setText("Hello " + firstName + ", \n \n Your new account password is: " + password + "\n \n The Support Team");
         message.setSentDate(new Date());
