@@ -68,6 +68,21 @@ public class UserResource extends ExceptionHandling {
 
     }
 
+    @PostMapping("/update")
+    public ResponseEntity<User> update(@RequestParam("firstName") String firstName,
+                                       @RequestParam("currentUsername") String currentUsername,
+                                       @RequestParam("lastName") String lastName,
+                                       @RequestParam("username") String username,
+                                       @RequestParam("email") String email,
+                                       @RequestParam("role") String role,
+                                       @RequestParam("isActive") String isActive,
+                                       @RequestParam("isNonLocked") String isNonLocked,
+                                       @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws UserNotFoundException, EmailExistException, IOException, UsernameExistException {
+        User updateUser = userService.updateUser(currentUsername,firstName,lastName,username,email,role,Boolean.parseBoolean(isActive),Boolean.parseBoolean(isNonLocked),profileImage);
+        return new ResponseEntity<>(updateUser,HttpStatus.OK);
+
+    }
+
     private HttpHeaders getJwtHeader(UserPrincipal user) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
