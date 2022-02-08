@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.atakanoguzdev.supportportall.constant.SecurityConstant.JWT_TOKEN_HEADER;
 
@@ -80,7 +81,18 @@ public class UserResource extends ExceptionHandling {
                                        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws UserNotFoundException, EmailExistException, IOException, UsernameExistException {
         User updateUser = userService.updateUser(currentUsername,firstName,lastName,username,email,role,Boolean.parseBoolean(isActive),Boolean.parseBoolean(isNonLocked),profileImage);
         return new ResponseEntity<>(updateUser,HttpStatus.OK);
+    }
 
+    @GetMapping("find/{username}")
+    public ResponseEntity<User> getUser(@PathVariable("username") String username) {
+        User user = userService.findUserByUserName(username);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
+
+    @GetMapping("find/{username}")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getUsers();
+        return new ResponseEntity<>(users,HttpStatus.OK);
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
