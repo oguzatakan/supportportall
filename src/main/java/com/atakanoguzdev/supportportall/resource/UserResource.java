@@ -89,7 +89,7 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
-    @GetMapping("find/{username}")
+    @GetMapping("list")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users,HttpStatus.OK);
