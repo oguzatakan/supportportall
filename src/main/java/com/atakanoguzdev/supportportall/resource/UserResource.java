@@ -1,9 +1,11 @@
 package com.atakanoguzdev.supportportall.resource;
 
+import com.atakanoguzdev.supportportall.domain.HttpResponse;
 import com.atakanoguzdev.supportportall.domain.User;
 import com.atakanoguzdev.supportportall.domain.UserPrincipal;
 import com.atakanoguzdev.supportportall.exception.ExceptionHandling;
 import com.atakanoguzdev.supportportall.exception.domain.EmailExistException;
+import com.atakanoguzdev.supportportall.exception.domain.EmailNotFoundException;
 import com.atakanoguzdev.supportportall.exception.domain.UserNotFoundException;
 import com.atakanoguzdev.supportportall.exception.domain.UsernameExistException;
 import com.atakanoguzdev.supportportall.service.UserService;
@@ -27,6 +29,7 @@ import static com.atakanoguzdev.supportportall.constant.SecurityConstant.JWT_TOK
 @RestController
 @RequestMapping(path = {"/","/user"})
 public class UserResource extends ExceptionHandling {
+    public static final String EMAIL_SENT = "An email with a new password was sent to: ";
     private UserService userService;
     private AuthenticationManager authenticationManager;
     private JWTTokenProvider jwtTokenProvider;
@@ -83,16 +86,25 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(updateUser,HttpStatus.OK);
     }
 
-    @GetMapping("find/{username}")
+    @GetMapping("/find/{username}")
     public ResponseEntity<User> getUser(@PathVariable("username") String username) {
         User user = userService.findUserByUserName(username);
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users,HttpStatus.OK);
+    }
+
+    @GetMapping("/resetPassword/{email}")
+    public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email) throws EmailNotFoundException, MessagingException {
+        userService.resetPassword(email);
+        return response(HttpStatus.OK, EMAIL_SENT + email);
+    }
+
+    private ResponseEntity<HttpResponse> response(HttpResponse httpResponse, String message) {
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
