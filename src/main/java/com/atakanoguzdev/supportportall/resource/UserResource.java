@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import static com.atakanoguzdev.supportportall.constant.SecurityConstant.JWT_TOK
 @RequestMapping(path = {"/","/user"})
 public class UserResource extends ExceptionHandling {
     public static final String EMAIL_SENT = "An email with a new password was sent to: ";
+    public static final String USER_DELETED_SUCCESFULLY = "User deleted succesfully";
     private UserService userService;
     private AuthenticationManager authenticationManager;
     private JWTTokenProvider jwtTokenProvider;
@@ -104,7 +106,16 @@ public class UserResource extends ExceptionHandling {
         return response(HttpStatus.OK, EMAIL_SENT + email);
     }
 
-    private ResponseEntity<HttpResponse> response(HttpResponse httpResponse, String message) {
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('user:delete')")
+    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id) {
+        userService.deleteUser(id);
+        return response(HttpStatus.OK, USER_DELETED_SUCCESFULLY);
+    }
+
+    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
+                message), httpStatus);
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
