@@ -1,5 +1,10 @@
 package com.atakanoguzdev.supportportall;
 
+import com.atakanoguzdev.supportportall.domain.User;
+import com.atakanoguzdev.supportportall.repository.UserRepository;
+import com.atakanoguzdev.supportportall.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +18,7 @@ import static com.atakanoguzdev.supportportall.constant.FileConstant.USER_FOLDER
 
 @SpringBootApplication
 public class SupportportallApplication {
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(SupportportallApplication.class, args);

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.atakanoguzdev.supportportall.constant.SecurityConstant.JWT_TOKEN_HEADER;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping(path = {"/","/user"})
@@ -110,12 +111,18 @@ public class UserResource extends ExceptionHandling {
     @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id) {
         userService.deleteUser(id);
-        return response(HttpStatus.OK, USER_DELETED_SUCCESFULLY);
+        return response(NO_CONTENT, USER_DELETED_SUCCESFULLY);
+    }
+
+    @PostMapping("/updateProfıleIMage")
+    public ResponseEntity<User> updateProfıleIMage(@RequestParam("username") String username, @RequestParam(value = "profileImage") MultipartFile profileImage) throws UserNotFoundException, EmailExistException, IOException, UsernameExistException {
+        User user = userService.updateProfileImage(username,profileImage);
+        return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
-                message), httpStatus);
+                message.toUpperCase()), httpStatus);
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
